@@ -36,9 +36,10 @@ public class SdkStarterService extends JobService {
 //        options.put(BlueCatsSDK.BC_OPTION_CACHE_ALL_BEACONS_FOR_APP, "false");
 //        options.put(BlueCatsSDK.BC_OPTION_CACHE_ALL_BEACONS_FOR_SITE, "false");
 //        options.put(BlueCatsSDK.BC_OPTION_POST_ON_VISIT_BEGINS, "true");
-//        options.put(BlueCatsSDK.BC_OPTION_USE_API, "false");
+        options.put(BlueCatsSDK.BC_OPTION_USE_API, "false");
+        options.put(BlueCatsSDK.BC_OPTION_DEEP_SLEEP_WAKEUP_TIME_INTERVAL_IN_MINUTES, "1");
 //        options.put(BlueCatsSDK.BC_OPTION_USE_LOCAL_STORAGE, "false");
-//        options.put(BlueCatsSDK.BC_OPTION_MONITOR_BLUE_CATS_REGION_ON_STARTUP, "false");
+        options.put(BlueCatsSDK.BC_OPTION_MONITOR_BLUE_CATS_REGION_ON_STARTUP, "false"); //no BlueCats beacons would be reported!
 //        options.put(BlueCatsSDK.BC_OPTION_ENERGY_SAVER_SCAN_STRATEGY, "true"); //be aware of battery
 //        options.put("BC_OPTION_SCAN_TIME", "0"); //1 minute, 60*1000, be aware of battery
 
@@ -48,17 +49,18 @@ public class SdkStarterService extends JobService {
         BlueCatsSDK.startPurringWithAppToken(getApplicationContext(), MainActivity.APP_TOKEN);
         BlueCatsSDK.didEnterForeground(); //immediately force foreground although the SDK running in background.
 
-//        BCLogManager.getInstance().setLogLevel(BCLogManager.BC_LOG_TYPE_NETWORK, BCLogManager.BC_LOG_LEVEL_MORE);
-//        BCLogManager.getInstance().setLogLevel(BCLogManager.BC_LOG_TYPE_RANGER, BCLogManager.BC_LOG_LEVEL_MORE);
-//        BCLogManager.getInstance().setLogLevel(BCLogManager.BC_LOG_TYPE_SCANNER, BCLogManager.BC_LOG_LEVEL_MORE);
+        //filter logs using string 'BlueCatsSDK'
+        BCLogManager.getInstance().setLogLevel(BCLogManager.BC_LOG_TYPE_NETWORK, BCLogManager.BC_LOG_LEVEL_MORE);
+        BCLogManager.getInstance().setLogLevel(BCLogManager.BC_LOG_TYPE_RANGER, BCLogManager.BC_LOG_LEVEL_MORE);
+        BCLogManager.getInstance().setLogLevel(BCLogManager.BC_LOG_TYPE_SCANNER, BCLogManager.BC_LOG_LEVEL_MORE);
         BlueCatsSDK.didEnterForeground();
 
         mBeaconManager = new BCBeaconManager();
         mBeaconManager.registerCallback(mCallback);
 
         //the public iBeacon or Eddystone you want to scan
-        BCBeaconRegion region = new BCBeaconRegion("050C6308-475C-468A-AFB6-5EED5F798F85", "region1234");
-        region.setNamespaceID("73D710F60B044B3C8FF6");
+        BCBeaconRegion region = new BCBeaconRegion("050C6308-475C-468A-AFB6-5EED5F798F85", "region1234"); //unique region name
+        region.setNamespaceID("73D710F60B044B3C8FF6"); //eddystone namespaceID
         mBeaconManager.startMonitoringBeaconRegion(region);
 
         new AsyncTask<Void, Void, Void>() {
